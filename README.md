@@ -15,6 +15,7 @@ I conceived the concept of this project after reading [this article](http://www.
 - Allows for limit setting
 - Can be used to display tables that requires foreign key (it's still pretty difficult for now, but I've done it before)
 - Every other feature that the **QSqlTableModel** has
+- Allows for custom operations on the database thread (see example below)
 
 ## How to use
 The project itself is an example of how to use this library. However, here's a preview:
@@ -51,6 +52,29 @@ You can view the table with a **QTableView**, since **AsyncTableModel** inherits
     view = new QTableView(this);
     view->setModel(model);
 
+## Custom operations
+In some occasions, you may want to run specific commands that are not provided by this library. A good example would be creating a user on a MySQL database. To achieve this, use the **AsyncSql::QueryRequest::setCustomOperation()** function.
+
+        // Assume user name and password are defined
+        // using namespace AsyncSql;
+        QueryRequest request(this, "" /*no query*/, tableName(), QueryRequest::CustomOperation);
+        // Using C++11 ...
+    request.setCustomOperation([userName, password](QSqlDatabase db)
+    {
+        // db is the connection object used on the query thread
+        QSqlQuery qry(db);
+        // Create user and grant access to database on localhost only
+        qry.prepare(QString("CREATE USER '%1'@'localhost' IDENTIFIED BY '%2'").arg(userName, password));
+        if(!qry.exec())
+            throw DatabaseException(qry.lastError(), tr("Failed to create user %1 on localhost.").arg(userName));
+            // More queries...
+    }
+    
+    emit execute(request);
+    
+    // Connect to the AsyncSql::AsyncSqlTableModel::executed() signal to check if operation was performed successfully.
+The functions **AsyncSql::QueryRequest::runBefore()** and **AsyncSql::QueryRequest::runAfter()** are also provided to conveniently run commands before or after a query respectively.
+
 ## Dependencies
 - [Qt 5] framework
 
@@ -58,7 +82,6 @@ You can view the table with a **QTableView**, since **AsyncTableModel** inherits
 * Database transaction handling
 * More examples (especially one that uses **QML**)
 * Other databases
-* Allow for custom operations on the database thread (work in progress)
  
 Lastly, as I always say:
 

@@ -15,7 +15,7 @@ QueryThread::QueryThread(QObject *parent) :
 {
 }
 
-const QueryThread &QueryThread::getInstance()
+const QueryThread &QueryThread::instance()
 {
     if(!this_thread)
     {

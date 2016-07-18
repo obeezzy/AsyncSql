@@ -12,7 +12,6 @@ class AsyncSqlTableModel : public QAbstractTableModel
     Q_OBJECT
     Q_PROPERTY(int currentRow READ currentRow WRITE setCurrentRow NOTIFY currentRowChanged)
 public:
-    enum SelectType {Required, All};
     explicit AsyncSqlTableModel(QObject *parent = nullptr);
     virtual ~AsyncSqlTableModel();
 
@@ -48,41 +47,48 @@ public:
     bool setRecord(int row, const QSqlRecord &);
     bool appendRecord(const QSqlRecord &);
 
-    QList<QSqlRecord> getInsertedRecords() const;
-    QMap<int, QSqlRecord> getUpdatedRecords() const;
-    QList<QSqlRecord> getRemovedRecords() const;
+    QList<QSqlRecord> insertedRecords() const;
+    QMap<int, QSqlRecord> updatedRecords() const;
+    QList<QSqlRecord> removedRecords() const;
 
     virtual void setLimit(int);
     int limit() const;
 
     QSqlError lastError() const;
+    QSqlRecord lastRecord() const;
 
-    void setSelectType(SelectType);
-    SelectType getSelectType() const;
+    void setForeignKeyFlag(bool);
+    bool foreignKeyFlag() const;
 
     void setCurrentRow(int); // For use with QML
     int currentRow() const;
 
     // Methods that are intended for use with QML
-    Q_INVOKABLE QVariant field(const QString &columnName) const;
-    Q_INVOKABLE void customInsert(const QVariantMap &);
+    Q_INVOKABLE virtual QVariant field(const QString &columnName) const;
+    Q_INVOKABLE virtual void customInsert(const QVariantMap &);
+    Q_INVOKABLE virtual void customUpdate(const QVariantMap &);
+
+    bool isBusy() const;
 protected:
     void setRecords(const QList<QSqlRecord> &);
     void setOriginalRecords(const QList<QSqlRecord> &);
-    QList<QSqlRecord> getRecords() const;
-    QList<QSqlRecord> getOriginalRecords() const;
+    QList<QSqlRecord> records() const;
+    QList<QSqlRecord> originalRecords() const;
 
     void setSelectedSignalSuppressed(bool);
     bool isSelectedSignalSuppressed() const;
     virtual bool validateModel();
-    QList<int> getInsertedRows() const;
+    QList<int> insertedRows() const;
+    QSqlIndex primaryIndex() const;
 
     void setLastError(const QSqlError &);
-    QSqlRecord getLastRecord() const;
+    void setBusy(bool);
 signals:
     void execute(const QueryRequest &);
     void selected(bool successful);
     void submitted(bool successful);
+    void executed(bool successful); // For custom operations
+    void busyChanged(bool);
 
     void currentRowChanged(int); // For use with QML
 protected slots:
@@ -94,25 +100,24 @@ public slots:
 private:
     QString filter_;
     QString tableName_;
-    Qt::SortOrder order;
-    int sortColumn;
+    Qt::SortOrder order_;
+    int sortColumn_;
     int limit_;
-    QSqlIndex primaryIndex;
-    QList<QSqlRecord> records;
-    QList<QSqlRecord> originalRecords;
-    QMap<int, QSqlRecord> updatedRecordMap, originalUpdatedRecordMap;
-    QList<int> insertedRows, originalInsertedRows;
-    QList<int> removedRows, originalRemovedRows;
-    QSqlRecord emptyRecord;
-    bool submitCalled;
-    QSqlError error;
-    QSqlRecord lastRecord;
-    static int transactionState;
+    QSqlIndex primaryIndex_;
+    QList<QSqlRecord> records_, originalRecords_;
+    QMap<int, QSqlRecord> updatedRecordMap_, originalUpdatedRecordMap_;
+    QList<int> insertedRows_, originalInsertedRows_;
+    QList<int> removedRows_, originalRemovedRows_;
+    QSqlRecord emptyRecord_;
+    bool submitCalled_;
+    QSqlError error_;
+    QSqlRecord lastRecord_;
+    bool foreignKeyFlag_;
 
-    bool selectedSignalSuppressed;
-    SelectType selectType;
+    bool selectedSignalSuppressed_;
 
     int currentRow_; // For use with QML
+    bool busy_;
 };
 }
 

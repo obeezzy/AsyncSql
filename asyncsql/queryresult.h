@@ -10,7 +10,7 @@ class QueryResult
 {
 public:
     explicit QueryResult(QObject *receiver = 0, const QList<QSqlRecord> & = QList<QSqlRecord>());
-    explicit QueryResult(QObject *receiver, const QSqlError &);
+    explicit QueryResult(QObject *receiver, QueryRequest::RequestType type, const QSqlError &);
 
     void clear();
 

@@ -6,6 +6,7 @@
 #include <QSqlIndex>
 #include <QVariant>
 #include "databaseconnection.h"
+#include <QSqlDatabase>
 
 #include <functional>
 
@@ -42,14 +43,14 @@ public:
     void setSortColumn(int);
     int getSortColumn() const;
 
-    void setRunBefore(const std::function<void(void)> &process);
-    std::function<void(void)> getRunBefore() const;
+    void setRunBefore(const std::function<void (QSqlDatabase)> &process);
+    std::function<void(QSqlDatabase)> getRunBefore() const;
 
-    void setRunAfter(const std::function<void(void)> &process);
-    std::function<void(void)> getRunAfter() const;
+    void setRunAfter(const std::function<void(QSqlDatabase)> &process);
+    std::function<void(QSqlDatabase)> getRunAfter() const;
 
-    void setCustomOperation(const std::function<void(void)> &process);
-    std::function<void(void)> getCustomOperation() const;
+    void setCustomOperation(const std::function<void (QSqlDatabase)> &process);
+    std::function<void (QSqlDatabase)> getCustomOperation() const;
 
     void setConnection(const DatabaseConnection &);
     DatabaseConnection getConnection() const;
@@ -64,9 +65,9 @@ private:
     int sortColumn;
     DatabaseConnection connection;
 
-    std::function<void (void)> runBefore;
-    std::function<void (void)> customOperation;
-    std::function<void (void)> runAfter;
+    std::function<void (QSqlDatabase)> runBefore;
+    std::function<void (QSqlDatabase)> customOperation;
+    std::function<void (QSqlDatabase)> runAfter;
 };
 }
 

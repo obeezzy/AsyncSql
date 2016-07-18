@@ -9,7 +9,7 @@ namespace AsyncSql {
 class DatabaseException : std::exception
 {
 public:
-    enum ErrorCode {FailedToCommit = 10000};
+    enum ErrorCode {FailedToCommit = 10000, DuplicateEntry};
     DatabaseException(const QSqlError &e, const QString userMsg = "") :
         error(e),
         code(e.number()),

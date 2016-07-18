@@ -25,9 +25,6 @@ public slots:
 private:
     QSqlDatabase m_database;
     QString connectionName;
-    QList<QSqlRecord> recordsToInsert;
-    QList<QSqlRecord> recordsToUpdate;
-    QList<QSqlRecord> recordsToDelete;
     QueryResult result;
     QSqlError error;
 

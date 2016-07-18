@@ -17,19 +17,22 @@ QueryWorker::QueryWorker(QObject *parent) :
     qDebug() << "QueryWorker thread started.";
 }
 
-void QueryWorker::execute(const QueryRequest &request) {
+void QueryWorker::execute(const QueryRequest &request)
+{
     QTime t;
     t.start();
 
-    try {
+    try
+    {
         openConnection(request);
 
         error = QSqlError();
         result.setReceiver(request.getReceiver());
+        result.setRequestType(request.getRequestType());
 
         QueryThread::setTransactionState(QueryThread::Unset);
 
-        request.getRunBefore()();
+        request.getRunBefore()(m_database);
 
         switch(request.getRequestType()) {
         case QueryRequest::Select:
@@ -54,7 +57,7 @@ void QueryWorker::execute(const QueryRequest &request) {
             executeCommand(request);
             break;
         case QueryRequest::CustomOperation:
-            request.getCustomOperation()();
+            request.getCustomOperation()(m_database);
             break;
         }
 
@@ -62,28 +65,32 @@ void QueryWorker::execute(const QueryRequest &request) {
 
         setLastRecord(request);
 
-        request.getRunAfter()();
+        request.getRunAfter()(m_database);
 
         result.setRequestType(request.getRequestType());
         result.setStatus(true);
         emit resultsReady(result);
         result.clear();
     }
-    catch (DatabaseException &e) {
+    catch (DatabaseException &e)
+    {
         if(!error.isValid())
             error = e.getError();
 
         qDebug() << "Emitting failure results for " << request.getTableName();
-        emit resultsReady(QueryResult(request.getReceiver(), error));
+        qDebug() << e.getError();
+        emit resultsReady(QueryResult(request.getReceiver(), request.getRequestType(), error));
         result.clear();
 
         m_database.rollback();
         //unlockTables();
     }
-    catch(std::exception &e) {
+    catch(std::exception &e)
+    {
         qDebug() << "Unusual exception: " << e.what();
     }
-    catch(...) {
+    catch(...)
+    {
         qDebug() << "Uncaught exception thrown....";
     }
 }
@@ -114,14 +121,12 @@ void QueryWorker::openConnection(const QueryRequest &request)
             || m_database.connectOptions() != connectOptions)
         m_database.close();
 
-    connectionName = driverName == "QSQLITE" ? sqliteConnectionName : mysqlConnectionName;
+    connectionName = (driverName == "QSQLITE" ? sqliteConnectionName : mysqlConnectionName);
 
     if(!QSqlDatabase::contains(connectionName))
         m_database = QSqlDatabase::addDatabase(driverName, connectionName);
     else
         m_database = QSqlDatabase::database(connectionName);
-
-    qDebug() << "Database object? " << m_database;
 
     m_database.setHostName(hostName);
     m_database.setUserName(userName);
@@ -175,9 +180,8 @@ void QueryWorker::select(const QueryRequest &request)
     result.setRecords(records);
 }
 
-void QueryWorker::update(const QueryRequest &req)
+void QueryWorker::update(const QueryRequest &request)
 {
-    QueryRequest request(req);
     QSqlQuery qry(m_database);
 
     for(int i = 0; i < request.getRecords().count(); ++i) {
@@ -191,7 +195,6 @@ void QueryWorker::update(const QueryRequest &req)
             query = QString("UPDATE %1 SET %2 = ? WHERE %3 = ?").arg(request.getTableName(),
                                                                  record.fieldName(j),
                                                                  request.getPrimaryIndex().fieldName(0));
-
             qry.prepare(query);
             qry.addBindValue(record.value(j));
             qry.addBindValue(record.value(request.getPrimaryIndex().fieldName(0)));

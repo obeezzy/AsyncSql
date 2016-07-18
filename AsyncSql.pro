@@ -14,8 +14,8 @@ TARGET = AsyncSql
 TEMPLATE = app
 
 
-SOURCES += main.cpp\
-        mainwindow.cpp \
+SOURCES += examples/databaseviewer/main.cpp\
+    examples/databaseviewer/mainwindow.cpp \
     asyncsql/asyncmodelregister.cpp \
     asyncsql/asyncsqltablemodel.cpp \
     asyncsql/databaseconnection.cpp \
@@ -24,9 +24,9 @@ SOURCES += main.cpp\
     asyncsql/querythread.cpp \
     asyncsql/queryworker.cpp \
     asyncsql/databaseexception.cpp \
-    optionsdialog.cpp
+    examples/databaseviewer/optionsdialog.cpp
 
-HEADERS  += mainwindow.h \
+HEADERS  += examples/databaseviewer/mainwindow.h \
     asyncsql/asyncmodelregister.h \
     asyncsql/asyncsqltablemodel.h \
     asyncsql/databaseconnection.h \
@@ -35,7 +35,7 @@ HEADERS  += mainwindow.h \
     asyncsql/querythread.h \
     asyncsql/queryworker.h \
     asyncsql/databaseexception.h \
-    optionsdialog.h
+    examples/databaseviewer/optionsdialog.h
 
-FORMS    += mainwindow.ui \
-    optionsdialog.ui
+FORMS    += examples/databaseviewer/mainwindow.ui \
+    examples/databaseviewer/optionsdialog.ui

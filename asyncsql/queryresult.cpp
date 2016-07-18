@@ -11,9 +11,9 @@ QueryResult::QueryResult(QObject *receiver, const QList<QSqlRecord> &records) :
 {
 }
 
-QueryResult::QueryResult(QObject *receiver, const QSqlError &error) :
+QueryResult::QueryResult(QObject *receiver, QueryRequest::RequestType type, const QSqlError &error) :
     receiver(receiver),
-    requestType(QueryRequest::None),
+    requestType(type),
     successful(false),
     error(error)
 {

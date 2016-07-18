@@ -11,9 +11,9 @@ QueryRequest::QueryRequest(QObject *receiver, const QString &query, const QStrin
     sortColumn(-1),
     type(type)
 {
-    setRunBefore([](){});
-    setCustomOperation([](){});
-    setRunAfter([](){});
+    setRunBefore([](QSqlDatabase){});
+    setCustomOperation([](QSqlDatabase){});
+    setRunAfter([](QSqlDatabase){});
 }
 
 void QueryRequest::setReceiver(QObject *receiver) {
@@ -77,22 +77,22 @@ int QueryRequest::getSortColumn() const {
     return sortColumn;
 }
 
-void QueryRequest::setRunBefore(const std::function<void(void)> &process)
+void QueryRequest::setRunBefore(const std::function<void (QSqlDatabase)> &process)
 {
     runBefore = process;
 }
 
-std::function<void (void)> QueryRequest::getRunBefore() const
+std::function<void (QSqlDatabase)> QueryRequest::getRunBefore() const
 {
     return runBefore;
 }
 
-void QueryRequest::setCustomOperation(const std::function<void(void)> &process)
+void QueryRequest::setCustomOperation(const std::function<void(QSqlDatabase)> &process)
 {
     customOperation = process;
 }
 
-std::function<void (void)> QueryRequest::getCustomOperation() const
+std::function<void (QSqlDatabase)> QueryRequest::getCustomOperation() const
 {
     return customOperation;
 }
@@ -107,12 +107,12 @@ DatabaseConnection QueryRequest::getConnection() const
     return connection;
 }
 
-void QueryRequest::setRunAfter(const std::function<void(void)> &process)
+void QueryRequest::setRunAfter(const std::function<void (QSqlDatabase)> &process)
 {
     runAfter = process;
 }
 
-std::function<void (void)> QueryRequest::getRunAfter() const
+std::function<void (QSqlDatabase)> QueryRequest::getRunAfter() const
 {
     return runAfter;
 }

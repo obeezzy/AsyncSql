@@ -19,9 +19,9 @@ public:
     bool removeAllModels();
     bool isDone() const;
 
-    QList<AsyncSqlTableModel *> getModels() const;
+    QList<AsyncSqlTableModel *> models() const;
 signals:
-    void allMarked();
+    void allMarked(bool);
 public slots:
     void mark();
     void clear();

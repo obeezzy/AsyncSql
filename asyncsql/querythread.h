@@ -22,7 +22,7 @@ public:
      * 1 signifies that there is a current transaction.
      */
     enum TransactionState {Failed = -1, Unset, Set};
-    static const QueryThread &getInstance();
+    static const QueryThread &instance();
     static QString getSqliteConnectionName();
     static QString getMysqlConnectionName();
 

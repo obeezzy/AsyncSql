@@ -172,7 +172,6 @@ DatabaseConnection::Driver DatabaseConnection::getDefaultDriver()
 
 QString DatabaseConnection::getDefaultDriverName()
 {
-    qDebug() << "Default driver name? " << defaultDriverName;
     return defaultDriverName;
 }
 

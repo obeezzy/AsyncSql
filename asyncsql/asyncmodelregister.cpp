@@ -33,7 +33,7 @@ void AsyncModelRegister::mark() {
     totalMarked++;
 
     if(isDone())
-        emit allMarked();
+        emit allMarked(true);
 }
 
 bool AsyncModelRegister::removeModel(AsyncSqlTableModel *model) {
@@ -60,7 +60,8 @@ bool AsyncModelRegister::removeAllModels() {
 }
 
 void AsyncModelRegister::clear() {
-    for(int i = 0; i < modelMap.count(); ++i) {
+    for(int i = 0; i < modelMap.count(); ++i)
+    {
         AsyncSqlTableModel *model = modelMap.keys().at(i);
 
         modelMap.insert(model, false);
@@ -69,7 +70,7 @@ void AsyncModelRegister::clear() {
     totalMarked = 0;
 }
 
-QList<AsyncSqlTableModel *> AsyncModelRegister::getModels() const {
+QList<AsyncSqlTableModel *> AsyncModelRegister::models() const {
     return modelMap.keys();
 }
 
