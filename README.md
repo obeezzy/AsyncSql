@@ -64,11 +64,15 @@ In some occasions, you may want to run specific commands that are not provided b
     {
         // db is the connection object used on the query thread
         QSqlQuery qry(db);
+        
         // Create user and grant access to database on localhost only
         qry.prepare(QString("CREATE USER '%1'@'localhost' IDENTIFIED BY '%2'").arg(userName, password));
+        
+        // If query fails, throw an exception that would be caught by the thread
         if(!qry.exec())
             throw DatabaseException(qry.lastError(), tr("Failed to create user %1 on localhost.").arg(userName));
-            // More queries...
+           
+        // More commands...
     }
     
     emit execute(request);
