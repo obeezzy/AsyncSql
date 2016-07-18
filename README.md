@@ -55,10 +55,11 @@ You can view the table with a **QTableView**, since **AsyncTableModel** inherits
 ## Custom operations
 In some occasions, you may want to run specific commands that are not provided by this library. A good example would be creating a user on a MySQL database. To achieve this, use the **AsyncSql::QueryRequest::setCustomOperation()** function.
 
-        // Assume user name and password are defined
-        // using namespace AsyncSql;
-        QueryRequest request(this, "" /*no query*/, tableName(), QueryRequest::CustomOperation);
-        // Using C++11 ...
+    // Assume user name and password are defined
+    // using namespace AsyncSql;
+    QueryRequest request(this, "" /*no query*/, tableName(), QueryRequest::CustomOperation);
+    
+    // Using C++11 ...
     request.setCustomOperation([userName, password](QSqlDatabase db)
     {
         // db is the connection object used on the query thread
@@ -73,6 +74,8 @@ In some occasions, you may want to run specific commands that are not provided b
     emit execute(request);
     
     // Connect to the AsyncSql::AsyncSqlTableModel::executed() signal to check if operation was performed successfully.
+    
+    
 The functions **AsyncSql::QueryRequest::runBefore()** and **AsyncSql::QueryRequest::runAfter()** are also provided to conveniently run commands before or after a query respectively.
 
 ## Dependencies
